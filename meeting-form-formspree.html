@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boka möte</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background:#f7f9fc; color:#0f172a; }
+    .container { max-width: 720px; margin: 40px auto; background:#fff; border-radius: 14px; box-shadow: 0 8px 30px rgba(15,23,42,.08); }
+    .header { padding: 24px 28px; border-bottom: 1px solid #e5e7eb; }
+    h1 { margin: 0; font-size: 24px; }
+    .content { padding: 24px 28px; }
+    label { display:block; font-weight:600; margin: 14px 0 6px; }
+    input, textarea { width:100%; box-sizing: border-box; padding: 12px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:16px; }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .actions { margin-top: 18px; display:flex; gap:12px; align-items:center; }
+    button { appearance:none; border:0; border-radius:10px; padding: 12px 18px; font-weight:700; cursor:pointer; }
+    .btn-primary { background:#7c3aed; color:#fff; }
+    .muted { color:#6b7280; font-size: 14px; }
+    .error { display:none; padding: 12px 14px; background:#fef2f2; color:#991b1b; border:1px solid #fecaca; border-radius:10px; margin-top: 14px; }
+    footer { padding: 18px 28px; color:#6b7280; font-size: 14px; }
+    @media (max-width: 640px){ .row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Boka ett möte</h1>
+      <p class="muted">Fyll i när det passar dig – vi återkommer med en kalenderinbjudan.</p>
+    </div>
+    <div class="content">
+      <form id="meeting-form" action="https://formspree.io/f/mjkagowr" method="POST">
+        <input type="hidden" name="_subject" value="Mötesförfrågan via formulär">
+        <label for="name">Namn</label>
+        <input id="name" name="name" placeholder="Ditt namn" required />
+
+        <label for="email">E-post</label>
+        <input id="email" name="email" type="email" placeholder="din@epost.se" required />
+
+        <div class="row">
+          <div>
+            <label for="date">Önskat datum</label>
+            <input id="date" name="date" type="date" required />
+          </div>
+          <div>
+            <label for="time">Önskad tid</label>
+            <input id="time" name="time" type="time" required />
+          </div>
+        </div>
+
+        <label for="notes">Meddelande (valfritt)</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="T.ex. vad ni vill prata om, förslag på flera tider, etc."></textarea>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary">Skicka förfrågan</button>
+        </div>
+        <div id="err" class="error">Oj! Något gick fel. Prova igen, eller maila oss på imshop@boleroo.se.</div>
+        <p class="muted">Genom att skicka godkänner du att vi behandlar dina uppgifter för att kontakta dig om mötet.</p>
+      </form>
+    </div>
+    <footer>
+      IMShop • <a href="mailto:imshop@boleroo.se">imshop@boleroo.se</a> • <a href="tel:+46762233880">+46 (0)76-22 33 880</a>
+    </footer>
+  </div>
+
+  <script>
+    // AJAX-post till Formspree och redirect till "thank-you.html"
+    const form = document.getElementById('meeting-form');
+    const err = document.getElementById('err');
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      err.style.display = 'none';
+      const data = new FormData(form);
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: data
+        });
+        if (res.ok) {
+          window.location.href = 'thank-you.html';
+        } else {
+          err.style.display = 'block';
+        }
+      } catch(e) {
+        err.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
